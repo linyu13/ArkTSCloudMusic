@@ -116,13 +116,13 @@
 @Entry
 @Component
 struct Index {
-  pathStack: NavPathStack = new NavPathStack();
+  pageStack: NavPathStack = new NavPathStack();
 
   build() {
-    Navigation(this.pathStack) {
+    Navigation(this.pageStack) {
     }.onAppear(() => {
       // 跳转 使用 route_map 中的 name
-      this.pathStack.pushPathByName("Start", null, false);
+      this.pageStack.pushPathByName("Start", null, false);
     })
     .hideNavBar(true) // 不会把自己放到控制跳转的对象当中 也就是不会返回到这个导航页
   }
