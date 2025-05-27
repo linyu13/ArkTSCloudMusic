@@ -92,7 +92,7 @@ export struct Home {
         .layoutWeight(1)
       Image($r('app.media.ic_more'))
         .width(22)
-        .fillColor('#fff')
+        .fillColor('#ff000000')
     }
   }
 

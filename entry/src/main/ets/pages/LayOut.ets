@@ -31,10 +31,10 @@ struct LayOut {
     Column({ space: 5 }) {
       Image(item.icon)
         .width(24)
-      // .fillColor('#63AAAA')
+        .fillColor(this.currentIndex === index ? '#E85A88' : '#63AAAA')
       Text(item.text)
         .fontSize(14)
-        .fontColor(this.currentIndex === index ? 'E85A88' : '#63AAAA')
+        .fontColor(this.currentIndex === index ? '#E85A88' : '#63AAAA')
     }
   }
 
