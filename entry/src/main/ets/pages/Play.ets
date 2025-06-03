@@ -12,12 +12,13 @@ export function PlayBuilder() {
 struct Play {
   @Local panelHeight: string = '0%'
   @Local panelOpacity: number = 0
-  pathStack: NavPathStack = new NavPathStack()
+  // pathStack: NavPathStack = new NavPathStack()
+  pageStack: NavPathStack = AppStorageV2.connect(NavPathStack, 'navStack', () => new NavPathStack())!
   songs: SongItemType[] = [
     {
       img: 'https://i.ibb.co/ynb1JJgg/b6e07678df0397a1db3f864bdc6edacf.jpg',
       name: '出哈',
-      author: '哈基米',
+      author: '耄耋',
       url: 'chuHa.m4a',
       id: '000'
     },
@@ -80,6 +81,13 @@ struct Play {
       .width(80)
       .height('100%')
       .type(ButtonType.Normal)
+      .onClick(() => {
+        playerManager.removeSong(index)
+        // 播放列表没有歌曲时退出播歌界面
+        if (this.playState.playList.length === 0) {
+          this.pageStack.pop()
+        }
+      })
   }
 
   number2tme(number: number) {
@@ -247,9 +255,29 @@ struct Play {
 
                 // 切换
                 Row() {
-                  Image($r('app.media.ic_auto'))
-                    .fillColor(Color.White)
-                    .width(30)
+                  if (this.playState.playMode === 'auto') {
+                    Image($r('app.media.ic_auto'))
+                      .fillColor(Color.White)
+                      .width(30)
+                      .onClick(() => {
+                        this.playState.playMode = 'random'
+                      })
+                  } else if (this.playState.playMode === 'random') {
+                    Image($r('app.media.ic_random'))
+                      .fillColor(Color.White)
+                      .width(30)
+                      .onClick(() => {
+                        this.playState.playMode = 'repeat'
+                      })
+                  } else if (this.playState.playMode === 'repeat') {
+                    Image($r('app.media.ic_repeat'))
+                      .fillColor(Color.White)
+                      .width(30)
+                      .onClick(() => {
+                        this.playState.playMode = 'auto'
+                      })
+                  }
+
                   Image($r('app.media.ic_prev'))
                     .fillColor(Color.White)
                     .width(30)
@@ -274,13 +302,119 @@ struct Play {
                   Image($r('app.media.ic_songList'))
                     .fillColor(Color.White)
                     .width(30)
-
+                    .onClick(() => {
+                      this.panelHeight = '50%'
+                      this.panelOpacity = 1
+                    })
                 }
                 .width('100%')
-                .padding({})
+                .padding({ bottom: 24 })
+                .justifyContent(FlexAlign.SpaceAround)
               }
+              .width('100%')
             }
+            .layoutWeight(1)
+            .width('100%')
           }
+        }
+        .width('100%')
+        .height('100%')
+        .backgroundColor(Color.Transparent)
+
+
+        // 列表
+        Column() {
+          Column() {
+
+          }
+          .width('100%')
+          .layoutWeight(1)
+          .onClick(() => {
+            this.panelHeight = '0%'
+            this.panelOpacity = 0
+          })
+
+          Column() {
+            Row() {
+              Row() {
+                Image($r('app.media.ic_pause'))
+                  .width(20)
+                  .fillColor('#FF5186')
+              }
+              .width(50)
+              .aspectRatio(1)
+              .justifyContent(FlexAlign.Center)
+
+              Row({ space: 8 }) {
+                Text(`播放列表(${this.playState.playList.length})`)
+                  .fontColor(Color.White)
+                  .fontSize(14)
+              }
+              .layoutWeight(1)
+
+              Image($r('app.media.ic_down'))
+                .fillColor('#FFA49A9A')
+                .width(24)
+                .height(24)
+                .margin({ right: 16 })
+                .onClick(() => {
+                  this.panelHeight = '0%'
+                  this.panelOpacity = 0
+                })
+            }
+            .width('100%')
+            .backgroundColor('#FF353333')
+            .padding(8)
+            .border({
+              width: { bottom: 1 },
+              color: '#12EC5C87'
+            })
+            .borderRadius({
+              topLeft: 4,
+              topRight: 4
+            })
+
+            // 播放列表
+            List() {
+              ForEach(this.playState.playList, (item: SongItemType, index: number) => {
+                ListItem() {
+                  Row() {
+                    Row() {
+                      Text((index + 1).toString())
+                        .width('15%')
+                        .fontColor('#FFA49A9A')
+                        .padding({ top: 5, bottom: 5, left: 12 })
+                      Text(item.name)
+                        .fontColor('#FFA49A9A')
+                        .padding({ left: 5 })
+                        .layoutWeight(1)
+                      Image($r('app.media.ic_more'))
+                        .width('10%')
+                        .height(20)
+                        .fillColor('#FFA49A9A')
+
+                    }
+                    .width('100%')
+                    // .aspectRatio(1)
+                    .justifyContent(FlexAlign.Center)
+                  }
+                  .alignItems(VerticalAlign.Center)
+                  .onClick(() => {
+                    playerManager.singPlay(item)
+                  })
+                }
+                .height(50)
+                .swipeAction({ end: this.deleteButton(index) })
+                .border({
+                  width: { bottom: 1 },
+                  color: '#12EC5C87'
+                })
+              })
+            }
+            .layoutWeight(1)
+            .backgroundColor('#FF353333')
+          }
+          .height(400)
         }
       }
     }

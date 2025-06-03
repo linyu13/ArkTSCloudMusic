@@ -15,5 +15,21 @@ export class GlobalMusic {
   @Trace playList: SongItemType[] = []
   // 暂停
   @Trace isPlay: boolean = false
+  // 播放模式
+  @Trace playMode: 'auto' | 'random' | 'repeat' = 'auto'
 
+  // 重置函数
+  reset() {
+    this.img = ''
+    this.name = ''
+    this.author = ''
+    this.url = ''
+    this.time = 0
+    this.duration = 0;
+    this.fd = 0
+    this.playIndex = 0
+    this.playList = []
+    this.isPlay = false
+    this.playMode = 'auto'
+  }
 }
