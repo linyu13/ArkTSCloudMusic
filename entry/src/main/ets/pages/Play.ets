@@ -10,7 +10,9 @@ export function PlayBuilder() {
 
 @ComponentV2
 struct Play {
-  @Local panelHeight: string = '0%'
+  // @Local panelHeight: string = '0%'
+  // @Local panelOpacity: number = 0
+  @Local panelHeight: number = 0 // 0 表示收起，0.5 表示展开
   @Local panelOpacity: number = 0
   // pathStack: NavPathStack = new NavPathStack()
   pageStack: NavPathStack = AppStorageV2.connect(NavPathStack, 'navStack', () => new NavPathStack())!
@@ -114,6 +116,9 @@ struct Play {
             .width('100%')
             .height('100%')
             .blur(1000)
+            .objectFit(ImageFit.Cover)// ✅ 图像裁剪并拉伸铺满容器
+            .position({ x: 0, y: 0 })// ✅ 固定位置
+            .zIndex(0)// ✅ 确保在最底层（防止被其他元素遮住）
             .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
 
           Column() {
@@ -303,7 +308,7 @@ struct Play {
                     .fillColor(Color.White)
                     .width(30)
                     .onClick(() => {
-                      this.panelHeight = '50%'
+                      this.panelHeight = 0.5
                       this.panelOpacity = 1
                     })
                 }
@@ -324,15 +329,15 @@ struct Play {
 
         // 列表
         Column() {
-          Column() {
-
-          }
-          .width('100%')
-          .layoutWeight(1)
-          .onClick(() => {
-            this.panelHeight = '0%'
-            this.panelOpacity = 0
-          })
+          // Column() {
+          //
+          // }
+          // .width('100%')
+          // .layoutWeight(1)
+          // .onClick(() => {
+          //   this.panelHeight = '0%'
+          //   this.panelOpacity = 0
+          // })
 
           Column() {
             Row() {
@@ -358,7 +363,7 @@ struct Play {
                 .height(24)
                 .margin({ right: 16 })
                 .onClick(() => {
-                  this.panelHeight = '0%'
+                  this.panelHeight = 0
                   this.panelOpacity = 0
                 })
             }
@@ -414,7 +419,21 @@ struct Play {
             .layoutWeight(1)
             .backgroundColor('#FF353333')
           }
-          .height(400)
+          // .height(this.panelHeight)
+          // .opacity(this.panelOpacity)
+          // .backgroundColor('#FF353333')
+          // .visibility(this.panelHeight === '0%' ? Visibility.None : Visibility.Visible)
+          // .transition({ type: TransitionType.All })
+          // .position({ x: 0, y: 'auto' })
+          // .width('100%')
+          // .align(Alignment.Bottom)
+          .height(this.panelHeight * 100 + '%') // 动态高度百分比
+          .opacity(this.panelOpacity)
+          .visibility(this.panelHeight === 0 ? Visibility.None : Visibility.Visible)
+          .transition({ type: TransitionType.All }) // 添加动画
+          .backgroundColor('#FF353333')
+          .align(Alignment.Bottom)
+          .width('100%')
         }
       }
     }
